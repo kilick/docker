@@ -34,6 +34,7 @@ services:
     volumes:
       - "./pelias.json:/code/pelias.json"
       - "${DATA_DIR}:/data"
+      - "./blacklist/:/data/blacklist"
   whosonfirst:
     image: pelias/whosonfirst:master
     container_name: pelias_whosonfirst
@@ -61,6 +62,14 @@ services:
   geonames:
     image: pelias/geonames:master
     container_name: pelias_geonames
+    user: "${DOCKER_USER}"
+    volumes:
+      - "./pelias.json:/code/pelias.json"
+      - "${DATA_DIR}:/data"
+      - "./blacklist/:/data/blacklist"
+  csv-importer:
+    image: pelias/csv-importer:master
+    container_name: pelias_csv_importer
     user: "${DOCKER_USER}"
     volumes:
       - "./pelias.json:/code/pelias.json"
@@ -101,8 +110,9 @@ services:
       - "./pelias.json:/code/pelias.json"
       - "${DATA_DIR}:/data"
   elasticsearch:
-    image: pelias/elasticsearch
+    image: pelias/elasticsearch:5.6.12
     container_name: pelias_elasticsearch
+    user: "${DOCKER_USER}"
     restart: always
     environment: [ "ES_JAVA_OPTS=-Xmx8g" ]
     ports: [ "9200:9200", "9300:9300" ]
